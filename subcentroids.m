@@ -22,8 +22,11 @@ nscans=29;
 tot=nscans*2;
 numNets=7;
 D = NaN(nsubjs,TR*2,numClusters); %distance matrices will be stored here
-LSDsubjInd=[repelem([1 3:nsubjs],TR),repelem(1:nsubjs,TR),repelem(0,TR*29)]'; % index data from each subject
+LSDsubjInd=[repelem([1 3:nsubjs],TR),repelem(1:nsubjs,TR),repelem(0,TR*29)]'; % index LSD data from each subject
 PLsubjInd=[repelem(0,TR*29),repelem([1 3:nsubjs],TR),repelem(1:nsubjs,TR)]';
+
+% LSDsubjInd=[repelem(1:nsubjs,TR),repelem(0,TR*nsubjs)]'; % index data from each subject (how most data is organized)
+% PLsubjInd=[repelem(0,TR*nsubjs),repelem(1:nsubjs,TR)]';
 
 LSD_stop=TR*nscans;
 PL_start=LSD_stop+1;
@@ -64,16 +67,16 @@ end
 
 
 for i=1:numClusters
-    [~,pUP(i,:),~,statUP{i}]=ttest(net7angle_Up(1:15,i,:),net7angle_Up(16:30,i,:));
-    [~,pDOWN(i,:),~,statDOWN{i}]=ttest(net7angle_Down(1:15,i,:),net7angle_Down(16:30,i,:));
+    [~,pUP(i,:),~,statUP{i}]=ttest(net7angle_Up(1:nsubjs,i,:),net7angle_Up(nsubjs+1:nsubjs*2,i,:));
+    [~,pDOWN(i,:),~,statDOWN{i}]=ttest(net7angle_Down(1:nsubjs,i,:),net7angle_Down(nsubjs+1:nsubjs*2,i,:));
 end
 
 pfdrDN=reshape(mafdr(reshape(pDOWN,1,[]),'BHFDR',1),numClusters,numNets);
 pfdrUP=reshape(mafdr(reshape(pUP,1,[]),'BHFDR',1),numClusters,numNets);
 
 
-UPstat = NaN(4,7);
-DNstat = NaN(4,7);
+UPstat = NaN(numClusters,numNets);
+DNstat = NaN(numClusters,numNets);
 for i=1:numClusters
     UPstat(i,:) = squeeze(statUP{i}.tstat(:,:,1:7));
     DNstat(i,:) = squeeze(statDOWN{i}.tstat(:,:,1:7));
@@ -126,8 +129,8 @@ set(gca,'Fontname','arial');
 
 %% make a correlation plot comparing LSD average centroids with PL average centriods
 load(['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat'],'clusterNames'); 
-LSDcentroids = squeeze(mean(centroids(1:15,:,:)));
-PLcentroids = squeeze(mean(centroids(16:30,:,:)));
+LSDcentroids = squeeze(mean(centroids(1:nsubjs,:,:)));
+PLcentroids = squeeze(mean(centroids(nsubjs+1:nsubjs*2,:,:)));
 
 err = NaN(numClusters,numClusters);
 for i=1:numClusters
@@ -219,6 +222,9 @@ if nparc == 454
     
 elseif nparc == 232
     load Schaefer232_HCP_DTI_count.mat connectivity
+
+elseif nparc == 463
+    load Lausanne463_HCP_DTI_count.mat connectivity
     
 elseif nparc == 461
     load Lausanne463_HCP_DTI_count.mat connectivity
@@ -244,6 +250,9 @@ if nparc == 454
 elseif nparc == 232
     load 5HTvecs_sch232.mat mean5HT2A_sch232
     HT = mean5HT2A_sch232;
+elseif nparc == 463
+    load 5HTvecs_ls463.mat mean5HT2A_ls463
+    HT = mean5HT2A_ls463;
 elseif nparc == 461
     load 5HTvecs_ls463.mat mean5HT2A_ls463
     HT = mean5HT2A_ls463;
@@ -278,16 +287,17 @@ end
 load(['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat'],'clusterNames'); 
 
 % Energy = E_full;
-Energy1=E_weighted(16:30,:);
-Energy2=E_full(16:30,:);
+Energy1=E_weighted(nsubjs+1:nsubjs*2,:);
+Energy2=E_full(nsubjs+1:nsubjs*2,:);
 
-% [~,pavg,~,t]=ttest(Energy(1:15,:),Energy(16:30,:));
+% [~,pavg,~,t]=ttest(Energy(1:nsubjs,:),Energy(nsubjs+1:nsubjs*2,:));
 [~,pavg,~,t]=ttest(Energy1,Energy2);
 fdravg = mafdr(pavg,'BHFDR',1);
 fdravg = reshape(fdravg,[numClusters numClusters])';
+pavg = reshape(pavg,[numClusters numClusters])';
 
-% grpAvgLSD = reshape(mean(Energy(1:15,:)),[numClusters numClusters])';
-% grpAvgPL = reshape(mean(Energy(16:30,:)),[numClusters numClusters])';
+% grpAvgLSD = reshape(mean(Energy(1:nsubjs,:)),[numClusters numClusters])';
+% grpAvgPL = reshape(mean(Energy(nsubjs+1:nsubjs*2,:)),[numClusters numClusters])';
 grpAvgLSD = reshape(mean(Energy1),[numClusters numClusters])';
 grpAvgPL = reshape(mean(Energy2),[numClusters numClusters])';
 
@@ -327,8 +337,10 @@ imagesc(LSDMinusPLTP); colormap('parula');%colormap('viridis');
 xticks(1:numClusters); xticklabels(clusterNames); xtickangle(90);
 yticks(1:numClusters); yticklabels(clusterNames); axis square
 ylabel('Initial State'); xlabel('Final State');
-sig_thresh = 0.05; %/numClusters^2; % bonferroni correction, for two-tailed p-values so only
-[y,x] = find(fdravg < sig_thresh); %this was used with two-tailed perm test-> p___.*~eye(numClusters)
+sig_thresh = 0.05;
+[y,x] = find(pavg < sig_thresh);
+text(x-.15,y+.18,'*','Color','w','Fontsize', 36);
+[y,x] = find(fdravg < sig_thresh);
 text(x-.15,y+.18,'**','Color','w','Fontsize', 36);
 u_caxis_bound = max(max(LSDMinusPLTP));
 l_caxis_bound = min(min(LSDMinusPLTP));

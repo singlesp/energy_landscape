@@ -10,7 +10,7 @@ split=22; % i am using split to denote different processing applied to data
 savedir = fullfile(basedir,'results','example');mkdir(savedir);		% set save directory
 
 TR = 217;
-nscans = 29;
+nscans = 29; %only different from nsubjs if you have multiple scans per subj/conditions
 LSD_stop = nscans;
 PL_start = LSD_stop+1;
 tot = nscans*2;
@@ -19,7 +19,7 @@ nsubjs=15;
 scan_length = 7.33; %length of scan in minutes to get appearances per minute
 
 subjInd=[repelem([1 3:nsubjs],1),repelem(1:nsubjs,1)]; % index data from each subject
-% subjInd=[repelem(1:nsubjs,1)]; %for premusic only
+% subjInd=[repelem(1:nsubjs,1)]; %for data with only 1 scan per subj/cond
 
 %% big loop
 for numClusters=[5]
@@ -139,7 +139,7 @@ for numClusters=[5]
                 end
             end
             PLdt1(c,b)=PL_count(c,1,b)/PL_count(c,2,b)*2; %total time/#appear *2 to convert to seconds
-            PLar1(c,b)=PL_count(c,2,b)/7.33; %appearance rate per minute = tot. appear / 7 min 20 s scan
+            PLar1(c,b)=PL_count(c,2,b)/scan_length; %appearance rate per minute = tot. appear / 7 min 20 s scan
         end
     end
     

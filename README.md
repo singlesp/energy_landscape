@@ -56,7 +56,7 @@ The user can also specify certain parameters in finalmain.sh:
 
 
 ## Sample data
-To simulate the analysis you can replace <concTS> and the <connectivity> variables with random numbers. The BOLD data used for this analysis is available at: https://openneuro.org/datasets/ds003059/versions/1.0.0
+To simulate the analysis you can replace the `concTS` and `connectivity` variables with random numbers. The BOLD data used for this analysis is available at: https://openneuro.org/datasets/ds003059/versions/1.0.0
 
 
 Please contact Parker Singleton (sps253@cornell.edu) with any questions regarding this code.

@@ -27,9 +27,9 @@ The most simple way to re-implement this work is to start by looking at the scri
 
 Please refer to the Cornblath repo README for a detailed overview of the vast majority of the code used for this analysis and how to use the .sh files provided in that analysis.
 
-Download the Cornblath repo (https://github.com/ejcorn/brain_states) and add the scripts from this repo to the BASEDIR. (or however you'd like to get it all in the same place)
+Download the Cornblath repo (https://github.com/ejcorn/brain_states) and add the scripts from this repo to the BASEDIR. (or however you'd like to get it all in the same place). Total install time <5 min.
 
-For larger projects, you may need cluster access - with thirty 15 min fMRI scans, I was able to perform all of this analysis locally on a 2020 MacBook Pro
+For larger projects, you may need cluster access - with 30x 15 min fMRI scans, I was able to perform all of this analysis locally on a 2020 MacBook Pro with a total run time of <1 day. The permutation test requires the most time (12 hrs), followed by replications of k-means (1hr).
 
 You may start by specifying a range of k over which to perform your preliminary analysis. At least 3 independent analyses have now found this ideal range to be 4-6 but you may find something different. 
 To check - run `repeatkmeans_sps.m` over a range of k [2:max] (see Cornblath et al 2020 for choosing max k) followed by `elbow_sps.m` to view the variance explained plot. 
@@ -55,7 +55,8 @@ The user can also specify certain parameters in finalmain.sh:
 - `split`: This variable was used in this analysis for simply keeping track of output files from different data/processing streams, whereas it is used for something else in Cornblath .sh files. 
 
 
+## Sample data
+To simulate the analysis you can replace <concTS> and the <connectivity> variables with random numbers. The BOLD data used for this analysis is available at: https://openneuro.org/datasets/ds003059/versions/1.0.0
 
 
-
-Please contact Parker Singleton (sps253@cornell.edu)) with any questions regarding this code.
+Please contact Parker Singleton (sps253@cornell.edu) with any questions regarding this code.

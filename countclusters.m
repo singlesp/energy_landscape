@@ -1,29 +1,30 @@
 %% script to get violin plot data - can alternatively use Cornblath functions
+% this data goes with violinplots_sps.R to make Figure 3 b/c i-iii
+
 clear all; close all;clc
-basedir = '/Users/sps253/Documents/brain_states-master';
+basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
-addpath(genpath('code'))
+
 %% set inputs
 
-split=22; % i am using split to denote different processing applied to data 
-% see ami_calc.m for full list of split descriptions
+split='main'
+load(fullfile(['data/',split,'.mat']))
 savedir = fullfile(basedir,'results','example');mkdir(savedir);		% set save directory
 
-TR = 217; %length of scan in TRs
-nscans = 29; %only different from nsubjs if you have multiple scans per subj/conditions
+
 LSD_stop = nscans;
 PL_start = LSD_stop+1;
 tot = nscans*2;
 nsubjs=15;
 
-scan_length = 7.33; %length of scan in minutes to get appearances per minute
-rep_time = 2; %rep time in seconds to convert dwell time to seconds
+% scan_length = 7.33; %length of scan in minutes to get appearances per minute
+% rep_time = 2; %rep time in seconds to convert dwell time to seconds
 
-subjInd=[repelem([1 3:nsubjs],1),repelem(1:nsubjs,1)]; % index data from each subject
+subj_scanInd=[repelem([1 3:nsubjs],1),repelem(1:nsubjs,1)]; % index data from each subject
 % subjInd=[repelem(1:nsubjs,1)]; %for data with only 1 scan per subj/cond
 
 %% big loop
-for numClusters=[5]
+for numClusters=[4]
     load(fullfile(savedir,['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat']))
     %% count number of each cluster per scan
     A=reshape(partition,TR,[]);
@@ -40,7 +41,7 @@ for numClusters=[5]
     
     %average scans by subject
     for i=1:nsubjs
-        LSDfo(:,i) = mean(LSDfo1(:,subjInd==i),2);
+        LSDfo(:,i) = mean(LSDfo1(:,subj_scanInd==i),2);
     end
     
     PL=count(:,PL_start:tot);
@@ -50,7 +51,7 @@ for numClusters=[5]
     
     %average scans by subject
     for i=1:nsubjs
-        PLfo(:,i) = mean(PLfo1(:,subjInd==i),2);
+        PLfo(:,i) = mean(PLfo1(:,subj_scanInd==i),2);
     end
     
     %% Calculate Dwell Time and Appearance Rate
@@ -110,14 +111,14 @@ for numClusters=[5]
     
     %average scans by subject
     for i=1:nsubjs
-        LSDdt(:,i) = mean(LSDdt1(:,subjInd==i),2);
+        LSDdt(:,i) = mean(LSDdt1(:,subj_scanInd==i),2);
     end
     
     LSDar=NaN(numClusters,nsubjs);
     
     %average scans by subject
     for i=1:nsubjs
-        LSDar(:,i) = mean(LSDar1(:,subjInd==i),2);
+        LSDar(:,i) = mean(LSDar1(:,subj_scanInd==i),2);
     end
     
     
@@ -148,14 +149,14 @@ for numClusters=[5]
     
     %average scans by subject
     for i=1:nsubjs
-        PLdt(:,i) = mean(PLdt1(:,subjInd==i),2);
+        PLdt(:,i) = mean(PLdt1(:,subj_scanInd==i),2);
     end
     
     PLar=NaN(numClusters,nsubjs);
     
     %average scans by subject
     for i=1:nsubjs
-        PLar(:,i) = mean(PLar1(:,subjInd==i),2);
+        PLar(:,i) = mean(PLar1(:,subj_scanInd==i),2);
     end
     
     %compute DT's and AR's averaged over clusters (does LSD overall have

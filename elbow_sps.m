@@ -4,21 +4,21 @@
 %% init
 
 clear all; close all;clc
-basedir = '/Users/sps253/Documents/brain_states-master';
+basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
-addpath(genpath('code'))
+
+split = 'main'
+
 savedir = fullfile(basedir,'results','example');mkdir(savedir);
-load(fullfile(basedir,['LSD_ls463_cat.mat'])) % make sure this file matches the split you want to run below
+load(fullfile(basedir,['data/',split,'.mat'])) % make sure this file matches the split you want to run below
 
 %% inputs
 
-
-concTS=TS_ls463_nomean; %make sure this matches the split
 N = size(concTS,1); % number of observations
+maxk = round(sqrt(TR))-1;
 
-split = 22; % i am using split to denote different processing applied to data 
+k_rng = 2:maxk;
 
-k_rng = 2:14;
 VarianceExplained = zeros(length(k_rng),1);
 
 for numClusters = k_rng

@@ -10,26 +10,26 @@ function [clusterNames,reorderClusters,clusterNamesSort,net7angle] = NAME_CLUSTE
 % if nparc > 400
 %     load('data/yeo7netlabelsLaus250.mat'); network7labels = network7labels(1:nparc);
 if nparc == 90 %|| nparc == 116 %will not work bc of sch116
-    load('/Users/sps253/Documents/ROI_maps/aal_to_yeo.csv'); 
+    load('data/aal_to_yeo.csv'); 
     network7labels=aal_to_yeo;
     %network7labels(isnan(network7labels))=8; %replace NaN values with 8 so it is unassigned
     %network7labels=[ones(13,1); 2*ones(13,1); 3*ones(13,1); 4*ones(13,1); 5*ones(13,1); 6*ones(13,1); 7*ones(12,1)];
 elseif nparc == 200 || nparc == 232
-    load('/Users/sps253/Documents/ROI_maps/sch232_to_yeo.csv'); 
+    load('data/sch232_to_yeo.csv'); 
     network7labels=sch232_to_yeo;
 elseif nparc == 100 || nparc == 116
-    load('/Users/sps253/Documents/ROI_maps/sch116_to_yeo.csv'); 
+    load('data/sch116_to_yeo.csv'); 
     network7labels=sch116_to_yeo;
 elseif nparc == 400 || nparc == 454
-    load('/Users/sps253/Documents/ROI_maps/sch454_to_yeo.csv');
+    load('data/sch454_to_yeo.csv');
     network7labels=sch454_to_yeo;
 elseif nparc == 462
-    load('/Users/sps253/Documents/ROI_maps/Lausanne_463_subnetworks.mat');
-    network7labels=subnetworks;
+    load('data/Lausanne_463_subnetworks.mat');
+
     network7labels=subnetworks_reorder;
     network7labels(463)=[];
 elseif nparc == 461 %ls463 with brainstem (last region) and region 14 removed (artefacts)
-    load('/Users/sps253/Documents/ROI_maps/Lausanne_463_subnetworks.mat');
+    load('data/Lausanne_463_subnetworks.mat');
     network7labels=subnetworks_reorder;
     network7labels([14 463])=[];
 end

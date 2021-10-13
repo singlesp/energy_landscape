@@ -1,29 +1,21 @@
 %% generate subject specific centroids to make subj-specific comparisons and an TE comparison matrix
 
 clear all; close all;
-basedir = '/Users/sps253/Documents/brain_states-master';
+basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
 savedir = fullfile(basedir,'results','example');mkdir(savedir);		% set save directory
 
 %% load BOLD data
 
-% replace TS with your BOLD data formatted as a T-by-nparc matrix
-% where T is the number of time points and nparc is the number of ROIs
-load(fullfile(basedir,['LSD_ls463_cat.mat']),'TS_ls463_nomean') % make sure this file matches the split you want to run (see above)
 
-split=22;
+split='main'
+load(fullfile(['data/',split,'.mat']))
 
-TR=217;
-concTS = TS_ls463_nomean; %zscore(TS_ls463_nomean); %make sure this matches the split
-[~,nparc] = size(concTS);
 numClusters=4;
-nsubjs=15;
-nscans=29;
+
 tot=nscans*2;
 numNets=7;
 D = NaN(nsubjs,TR*2,numClusters); %distance matrices will be stored here
-LSDsubjInd=[repelem([1 3:nsubjs],TR),repelem(1:nsubjs,TR),repelem(0,TR*29)]'; % index LSD data from each subject
-PLsubjInd=[repelem(0,TR*29),repelem([1 3:nsubjs],TR),repelem(1:nsubjs,TR)]';
 
 % LSDsubjInd=[repelem(1:nsubjs,TR),repelem(0,TR*nsubjs)]'; % index data from each subject (how most data is organized)
 % PLsubjInd=[repelem(0,TR*nsubjs),repelem(1:nsubjs,TR)]';
@@ -213,161 +205,8 @@ set(gca,'Fontname','arial');
 % end
 
 
-%% energy matrices
-
-
-if nparc == 454
-    load Schaefer454_HCP_DTI_count.mat connectivity
-%     load sch454_DTI_fiber_consensus_HCP.mat connectivity %consensus matrix
-    
-elseif nparc == 232
-    load Schaefer232_HCP_DTI_count.mat connectivity
-
-elseif nparc == 463
-    load Lausanne463_HCP_DTI_count.mat connectivity
-    
-elseif nparc == 461
-    load Lausanne463_HCP_DTI_count.mat connectivity
-%     load ls463_DTI_fiber_consensus_HCP.mat connectivity %consensus matrix (less sparse)
-    
-    connectivity([14 463],:)=[];
-    connectivity(:,[14 463])=[];
-end
-
-sc = connectivity;
-c = 0; T = 0.001; % set time scale parameters based on values from T_sweep_sps.m
-Anorm = NORMALIZE(sc,c); 
-
-% define x0 and xf, initial and final states as cluster centroids for each
-% state transition
-Xf_ind = repmat(1:numClusters,[1 numClusters]); % final state order
-Xo_ind = repelem(1:numClusters,numClusters); % paired with different initial states, use reshape(x,[numClusters numClusters])' to get matrix
-onDiag = (1:numClusters) + (numClusters*(0:(numClusters-1)));
-offDiag = 1:(numClusters^2); offDiag(onDiag) = []; % isolate off diagonal from linearized transition probabilities
-if nparc == 454
-    load 5HTvecs_sch454.mat mean5HT2A_sch454
-    HT = mean5HT2A_sch454;
-elseif nparc == 232
-    load 5HTvecs_sch232.mat mean5HT2A_sch232
-    HT = mean5HT2A_sch232;
-elseif nparc == 463
-    load 5HTvecs_ls463.mat mean5HT2A_ls463
-    HT = mean5HT2A_ls463;
-elseif nparc == 461
-    load 5HTvecs_ls463.mat mean5HT2A_ls463
-    HT = mean5HT2A_ls463;
-    HT([14 463],:)=[];
-end %weight towards 5HT2a
-norm = (HT/max(HT))';
-InputVector = norm;% > 0.883; %option to binarize input vector
-B = InputVector .*eye(nparc) + eye(nparc);
-
-E_full=NaN(nsubjs*2,numClusters^2);
-E_weighted=NaN(nsubjs*2,numClusters^2);
-
-for i=1:nsubjs*2 
-    x0 = squeeze(centroids(i,:,Xo_ind));
-    xf = squeeze(centroids(i,:,Xf_ind)); % now each column of x0 and xf represent state transitions
-    WcI = GRAMIAN_FAST(Anorm, T); % compute gramian inverse for control horizon T
-    E_full(i,:) = MIN_CONTROL_ENERGY(Anorm, WcI, x0, xf, T,false); % compute minimum control energy for each state transition
-    
-    % compute weighted control energy:
-    
- % construct input matrix allowing input only into selected regions in InputVector
-    
-    for transition = 1:numClusters^2
-        [x, u] = MIN_ENG_CONT(Anorm, T, B, x0(:,transition), xf(:,transition), 0);
-        E_weighted(i,transition) = sum(sum(u.^2))*T/1001; % integrate over inputs
-    end
-
-end
-
-%% plot either LSD v PL or PL weighted vs PL full
-
-load(['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat'],'clusterNames'); 
-
-% Energy = E_full;
-Energy1=E_weighted(nsubjs+1:nsubjs*2,:);
-Energy2=E_full(nsubjs+1:nsubjs*2,:);
-
-% [~,pavg,~,t]=ttest(Energy(1:nsubjs,:),Energy(nsubjs+1:nsubjs*2,:));
-[~,pavg,~,t]=ttest(Energy1,Energy2);
-fdravg = mafdr(pavg,'BHFDR',1);
-fdravg = reshape(fdravg,[numClusters numClusters])';
-pavg = reshape(pavg,[numClusters numClusters])';
-
-% grpAvgLSD = reshape(mean(Energy(1:nsubjs,:)),[numClusters numClusters])';
-% grpAvgPL = reshape(mean(Energy(nsubjs+1:nsubjs*2,:)),[numClusters numClusters])';
-grpAvgLSD = reshape(mean(Energy1),[numClusters numClusters])';
-grpAvgPL = reshape(mean(Energy2),[numClusters numClusters])';
-
-grpDiff = reshape(squeeze(t.tstat),[numClusters numClusters])';% .* -log(fdravg); (add sign() around tstat if want
-
-maxVal = max(max([grpAvgLSD,grpAvgPL])); % sync color scales
-minVal = min(min([grpAvgLSD,grpAvgPL]));
-
-figure;
-subplot(1,3,1);
-imagesc(grpAvgLSD);
-xticks(1:numClusters); yticks(1:numClusters); colormap('plasma'); 
-xticklabels(clusterNames); xtickangle(90); yticklabels(clusterNames); axis square;
-COLOR_TICK_LABELS(true,true,numClusters);
-ylabel('Initial State'); xlabel('Final State');
-title('LSD');
-set(gca,'FontSize',18);
-set(gca,'TickLength',[0 0]);
-set(gca,'Fontname','arial');
-caxis([minVal maxVal]); colorbar
-
-subplot(1,3,2);
-imagesc(grpAvgPL);
-xticks(1:numClusters); yticks(1:numClusters); colormap('plasma'); 
-xticklabels(clusterNames); xtickangle(90); yticklabels(clusterNames); axis square;
-COLOR_TICK_LABELS(true,true,numClusters);
-ylabel('Initial State'); xlabel('Final State');
-title('PL');
-set(gca,'FontSize',18);
-set(gca,'TickLength',[0 0]);
-set(gca,'Fontname','arial');
-caxis([minVal maxVal]); colorbar
-
-subplot(1,3,3);
-LSDMinusPLTP = (grpDiff);%fdrpv1t; %((grpAvgPL - grpAvgLSD)); %switching order for manuscript figures
-imagesc(LSDMinusPLTP); colormap('parula');%colormap('viridis');
-xticks(1:numClusters); xticklabels(clusterNames); xtickangle(90);
-yticks(1:numClusters); yticklabels(clusterNames); axis square
-ylabel('Initial State'); xlabel('Final State');
-sig_thresh = 0.05;
-[y,x] = find(pavg < sig_thresh);
-text(x-.15,y+.18,'*','Color','w','Fontsize', 36);
-[y,x] = find(fdravg < sig_thresh);
-text(x-.15,y+.18,'**','Color','w','Fontsize', 36);
-u_caxis_bound = max(max(LSDMinusPLTP));
-l_caxis_bound = min(min(LSDMinusPLTP));
-h = colorbar; ylabel(h,'t-stat'); caxis([l_caxis_bound u_caxis_bound]); h.Ticks = [l_caxis_bound (u_caxis_bound+l_caxis_bound)/2 u_caxis_bound]; 
-h.TickLabels = [round(l_caxis_bound,2,'significant') round((l_caxis_bound+u_caxis_bound)/2,2,'significant') round(u_caxis_bound,1,'significant')];
-COLOR_TICK_LABELS(true,true,numClusters);
-title('PL > LSD');
-set(gca,'FontSize',18);
-set(gca,'TickLength',[0 0]);
-set(gca,'Fontname','arial');
-
-
-
-%% compute transition energy for each state with average Placebo centroids
-
-
-E_weighted_PLavg = zeros(1,numClusters^2);
-
-x0 = squeeze(mean(centroids(16:30,:,Xo_ind)));
-xf = squeeze(mean(centroids(16:30,:,Xf_ind))); 
-
-for transition = 1:numClusters^2
-    [x, u] = MIN_ENG_CONT(Anorm, T, B, x0(:,transition), xf(:,transition), 0);
-    E_weighted_PLavg(transition) = sum(sum(u.^2))*T/1001; % integrate over inputs
-end
 
 %% save
 
-% save('sch454_subjcentroids.mat','centroids','concTS','f','partition','overallCentroids','LSDsubjInd','PLsubjInd','MS1','MS1a','MS1b','MS2','MS2a','MS2b','E_full','E_weighted');
-save(fullfile(savedir,['subjcentroids_split',num2str(split),'_k',num2str(numClusters),'.mat']),'centroids','E_weighted','E_full','T','E_weighted_PLavg')
+
+save(fullfile(savedir,['subjcentroids_split',num2str(split),'_k',num2str(numClusters),'.mat']),'centroids')

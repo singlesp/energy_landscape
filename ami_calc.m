@@ -1,55 +1,36 @@
-%%
-% Start here with your analysis after you have chosen k: 
-% load concatenated TS with [T, nparc] size.
-% Specify numclusters
-% 10 partitions are compared for mutual information
-% the partition which scores the most mutual information with all 49 other
-% cluseters is selected, plotted, and saved for further analysis
-
-%requires AMI function added to path available here: https://www.mathworks.com/matlabcentral/fileexchange/33144-the-adjusted-mutual-information
-
+%% step 1 after choosing k (or a range of k)
 
 %%
 clear all; close all;clc
-basedir = '/Users/sps253/Documents/brain_states-master';
+basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
-addpath(genpath('code'))
+
+split = 'main'
+
+load(fullfile(['data/',split,'.mat']))
+
 %% set inputs
 
 savedir = fullfile(basedir,'results','example');mkdir(savedir);		% set save directory
 distanceMethod = 'correlation'; % distance metric for clustering, we used correlation
 nreps = 50;	% how many times to repeat clustering. will choose lowest error solution
 maxI = 1000; % how many times to let kmeans try to converge before aborting rep
-split = 22; % i am using split to denote different processing applied to data 
 
-
-%% load BOLD data
-
-% replace TS with your BOLD data formatted as a T-by-nparc matrix
-% where T is the number of time points and nparc is the number of ROIs
-load(fullfile(basedir,['LSD_ls463_cat.mat']),'TS_ls463_nomean') % make sure this file matches the split you want to run (see above)
-
-
-TR=217;
-
-concTS = TS_ls463_nomean; %make sure this matches the split
-
-% concTS = zscore(concTS); %option to z-score
 
 [T,nparc] = size(concTS);
 
 
 %% generate N partitions that will be compared pair-wise for mutual information
 
-for numClusters=[5 6] %if undecided, run loop. If confident about k, you can run over only 1 value for numClusters
+for numClusters=[4] %if undecided, run loop. If confident about k, you can run over only 1 value for numClusters
     disp(['Starting clusters number: ',num2str(numClusters)]);
     N = 10; %number of partitions to create and compare
     parts = NaN(T,N); %partitions will be stored here
     D = NaN(N,T,numClusters); %distance matrices will be stored here
     
-    %load centroids to initialize kmeans on (optional) 
+    %load centroids from main analysis to initialize kmeans on (optional - useful for smaller data sets/replications such as psilo) 
     % MUST ADD <'Start', init> to the kmeans inputs to use this
-%     load(['Partition_bp12_k',num2str(numClusters),'.mat'],'centroids'); %make sure file matches centroids you want to initialize from
+%     load(['Partition_bpmain_k',num2str(numClusters),'.mat'],'centroids'); %make sure file matches centroids you want to initialize from
 %     init = NaN(numClusters,nparc,nreps);
 %     for i=1:nreps
 %         init(:,:,i) = centroids.';
@@ -74,7 +55,7 @@ for numClusters=[5 6] %if undecided, run loop. If confident about k, you can run
     [m,ind] = max(sum(ami_results,1)); %ind corresponds to the partition which has the highest mutual information with all other partitions
     partition = parts(:,ind); % take partition that has most agreement with all other for further analysis
     
-    % plot
+    % plot SI Figure 1
     f = figure;
     
     imagesc(ami_results); title(['Adjusted Mutal Information between Partitions k=',num2str(numClusters)]); colorbar;
@@ -107,5 +88,5 @@ for numClusters=[5 6] %if undecided, run loop. If confident about k, you can run
     
     %% save
     
-    save(fullfile(savedir,['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat']), 'parts', 'ami_results', 'ind', 'partition', 'clusterNames', 'centroids','D');
+    save(fullfile(savedir,['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat']), 'parts', 'ami_results', 'ind', 'partition', 'clusterNames', 'centroids');
 end

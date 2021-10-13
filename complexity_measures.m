@@ -1,26 +1,31 @@
-%% complexity measures (load a combined brain-state time-series)
+%% complexity measures (load a combined brain-state time-series) must have partition ordered in meta-state
+% order i.e. (1 and 2 belong to MS-1; 3 and 4 belong to MS-2)
+% the data generated here are used in E_corrs.m
+
 clear all; close all;clc
-basedir = '/Users/sps253/Documents/brain_states-master';
+basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
-addpath(genpath('code'))
+savedir = fullfile(basedir,'results','example');mkdir(savedir);	
 %% set inputs
 
-split=22; % i am using split to denote different processing applied to data 
+split='main' 
+load(fullfile(['data/',split,'.mat']))
 numClusters = 4;
-savedir = fullfile(basedir,'results','example');mkdir(savedir);	
+
 
 % load a combined brain-state time series (SOM+ and SOM- would be one
 % state -- use comb_clusters.m to achieve this)
-load(fullfile(savedir,['cPartition_bp',num2str(split),'_k',num2str(numClusters),'.mat']),'partition');
-TR=217;
-nscans=29;
+load(fullfile(savedir,['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat']),'partition');
+
 tot = nscans*2;
-nsubjs = 15;
-subjInd=[repelem([1 3:nsubjs],1),repelem(1:nsubjs,1)]'; % index data from each subject
+
 
 %% binarize partition
 
-bin_partition = partition - 1; 
+bin_partition = NaN(size(partition));
+bin_partition(partition<3)=0;
+bin_partition(partition>2)=1;
+
 
 %% calc LZ complexity with LZ76 (function calc_lz_complexity.m from mathworks Copyright (c) 2012, Quang Thai)
 
@@ -40,7 +45,7 @@ LSDlz=NaN(1,nsubjs);
     
     %average scans by subject
     for i=1:nsubjs
-        LSDlz(:,i) = mean(LSDlz1(subjInd==i));
+        LSDlz(:,i) = mean(LSDlz1(subj_scanInd==i));
     end
     
     
@@ -50,22 +55,13 @@ LSDlz=NaN(1,nsubjs);
     
     %average scans by subject
     for i=1:nsubjs
-        PLlz(:,i) = mean(PLlz1(subjInd==i));
+        PLlz(:,i) = mean(PLlz1(subj_scanInd==i));
     end
 
 [h,p,ci,t]=ttest(LSDlz,PLlz);
 
 %% save
 
-% save(fullfile(savedir,['LZcomplexity_bp',num2str(split),'_k',num2str(numClusters),'.mat']),'PLlz','LSDlz');
+save(fullfile(savedir,['LZcomplexity_bp',num2str(split),'_k',num2str(numClusters),'.mat']),'PLlz','LSDlz');
 
-%% shannon entropy of rss plots
 
-% load sch454edgeFC.mat
-% entropy = NaN(nscans,1);
-% 
-% for i=1:nscans
-%     entropy(i) = wentropy(rss(:,i),'shannon');
-% end
-% 
-% [h1,p1,ci1,t1]=ttest(entropy(1:14),entropy(30:43));

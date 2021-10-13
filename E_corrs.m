@@ -1,16 +1,26 @@
-%% correlate energy calcs with other measures
+%% correlate energy calcs with other measures Figure 6
 
 clear all; close all;
-basedir = '/Users/sps253/Documents/brain_states-master';
+basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
 savedir = fullfile(basedir,'results','example');mkdir(savedir);		% set save directory
 
 
 %%
-split = 22;
+split='main' 
+load(fullfile(['data/',split,'.mat']))
 numClusters = 4;
 
-load(fullfile(savedir,['subjcentroids_split',num2str(split),'_k',num2str(numClusters),'.mat']));
+T=0.001;
+
+
+% load ratingsmeasures.mat FDdiff
+% 
+% if nsubjs==12
+%     FDdiff([3 12 15]) = [];
+% end
+
+load(fullfile(savedir,['subjenergy_split',num2str(split),'_k',num2str(numClusters),'_T',num2str(T),'.mat']));
 
 load(fullfile(savedir,['ViolinData_bp',num2str(split),'_k',num2str(numClusters),'.mat']));
 
@@ -20,26 +30,26 @@ load(fullfile(savedir,['LZcomplexity_bp',num2str(split),'_k',num2str(numClusters
 
 %% Whole matrix mean diff and stdev diff
 
-E_L = E_full(1:15,:);
-E_P = E_full(16:30,:);
+E_L = E_full(1:nsubjs,:);
+E_P = E_full(nsubjs+1:nsubjs*2,:);
 
 
-for i=1:15
+for i=1:nsubjs
     E_Li(i,:)=mean(reshape(E_L(i,:),[numClusters numClusters])');
     E_Pi(i,:)=mean(reshape(E_P(i,:),[numClusters numClusters])');
 end
 
 E_Di = (E_Li - E_Pi)./(E_Li+E_Pi);
-E_Dirsp = reshape(E_Di,60,1);
+E_Dirsp = reshape(E_Di,nsubjs*numClusters,1);
 
 FO_diff = ((LSDfo - PLfo)./(LSDfo+PLfo))';
-FO_diff_rsp = reshape(FO_diff,60,1);
+FO_diff_rsp = reshape(FO_diff,nsubjs*numClusters,1);
 
 DT_diff = ((LSDdt - PLdt)./(LSDdt+PLdt))';
-DT_diff_rsp = reshape(DT_diff,60,1);
+DT_diff_rsp = reshape(DT_diff,nsubjs*numClusters,1);
 
 AR_diff = ((LSDar - PLar)./(LSDar+PLar))';
-AR_diff_rsp = reshape(AR_diff,60,1);
+AR_diff_rsp = reshape(AR_diff,nsubjs*numClusters,1);
 
 [r,p] = corr(E_Dirsp,FO_diff_rsp);
 [r1,p1] = corr(E_Dirsp,DT_diff_rsp);
@@ -51,10 +61,10 @@ AR_diff_rsp = reshape(AR_diff,60,1);
 
 %% partial corr with framewise displacement
 
-load ratingsmeasures.mat FDdiff
 
-E_L = E_full(1:15,:);
-E_P = E_full(16:30,:);
+
+E_L = E_full(1:nsubjs,:);
+E_P = E_full(nsubjs+1:nsubjs*2,:);
 
 E_L_avg = mean(E_L');
 E_P_avg = mean(E_P');
@@ -78,23 +88,25 @@ diffFO = (FO_L - FO_P) ./ (FO_L+FO_P);
 
 diffLZ = (LSDlz - PLlz) ./ (LSDlz+PLlz);
 
-% [r6,p6] = corr(diff_E_avg',diffFO');
-% [r7,p7] = corr(diff_E_avg',diffDT');
-% [r8,p8] = corr(diff_E_avg',diffAR');
+[r6,p6] = corr(diff_E_avg',diffFO');
+[r7,p7] = corr(diff_E_avg',diffDT');
+[r8,p8] = corr(diff_E_avg',diffAR');
+[r12,p12] = corr(diff_E_avg',diffLZ');
+
+[r9,p9] = corr(diff_E_std',diffFO');
+[r10,p10] = corr(diff_E_std',diffDT');
+[r11,p11] = corr(diff_E_std',diffAR');
+[r13,p13] = corr(diff_E_std',diffLZ');
+
+% [r6,p6] = partialcorr(diff_E_avg',diffFO',FDdiff);
+% [r7,p7] = partialcorr(diff_E_avg',diffDT',FDdiff);
+% [r8,p8] = partialcorr(diff_E_avg',diffAR',FDdiff);
+% [r12,p12] = partialcorr(diff_E_avg',diffLZ',FDdiff);
 % 
-% [r9,p9] = corr(diff_E_std',diffFO');
-% [r10,p10] = corr(diff_E_std',diffDT');
-% [r11,p11] = corr(diff_E_std',diffAR');
-
-[r6,p6] = partialcorr(diff_E_avg',diffFO',FDdiff);
-[r7,p7] = partialcorr(diff_E_avg',diffDT',FDdiff);
-[r8,p8] = partialcorr(diff_E_avg',diffAR',FDdiff);
-[r12,p12] = partialcorr(diff_E_avg',diffLZ',FDdiff);
-
-[r9,p9] = partialcorr(diff_E_std',diffFO',FDdiff);
-[r10,p10] = partialcorr(diff_E_std',diffDT',FDdiff);
-[r11,p11] = partialcorr(diff_E_std',diffAR',FDdiff);
-[r13,p13] = partialcorr(diff_E_std',diffLZ',FDdiff);
+% [r9,p9] = partialcorr(diff_E_std',diffFO',FDdiff);
+% [r10,p10] = partialcorr(diff_E_std',diffDT',FDdiff);
+% [r11,p11] = partialcorr(diff_E_std',diffAR',FDdiff);
+% [r13,p13] = partialcorr(diff_E_std',diffLZ',FDdiff);
 
 
 %% plot Eavg and Estd vs DT, AR, and LZ
@@ -156,134 +168,70 @@ for i=1:2
     end
 end
 
-%% radial values of LIMBIC is MS-1a (high-amplitude)
-
-LSD_lim_UP = net7angle_Up(1:15,1,5);
-PL_lim_UP = net7angle_Up(16:30,1,5);
-
-diffLIM_UP = (LSD_lim_UP - PL_lim_UP)./(LSD_lim_UP + PL_lim_UP);
 
 
+   
+%% corr FD for each cond separately (SI Figures 20-22)
 
-%% Subjective measures
+% %LSD
+% [FOr,FOp] = corr(LSDfo',LSD_FD);
+% [DTr,DTp] = corr(LSDdt',LSD_FD);
+% [ARr,ARp]=corr(LSDar',LSD_FD);
+% [Er,Ep]=corr(E_L_avg',LSD_FD);
+% 
+% figure;
+% title('LSD');
+% for i=1:numClusters
+%    subplot(3,4,i)
+%    scatter(LSDfo(i,:)',LSD_FD,50,'filled'); lsline
+%    ylabel('FD'); xlabel(['FO Cluster ',num2str(i)]);
+%    text(0.25,0.1,{['R = ',num2str(round(FOr(i),4))], ['p = ',num2str(round(FOp(i),4))]});
+%    
+%    subplot(3,4,i+4)
+%    scatter(LSDdt(i,:)',LSD_FD,50,'filled'); lsline
+%    ylabel('FD'); xlabel(['DT Cluster ',num2str(i)]);
+%    text(7.5,0.1,{['R = ',num2str(round(DTr(i),4))], ['p = ',num2str(round(DTp(i),4))]});
+%    
+%    subplot(3,4,i+8)
+%    scatter(LSDar(i,:)',LSD_FD,50,'filled'); lsline
+%    ylabel('FD'); xlabel(['AR Cluster ',num2str(i)]);
+%    text(2.25,0.1,{['R = ',num2str(round(ARr(i),4))], ['p = ',num2str(round(ARp(i),4))]});
+% end
+% 
+% figure;
+% scatter(E_L_avg',LSD_FD,50,'filled'); lsline
+% ylabel('FD'); xlabel(['E_a_v_g']);
+%    text(1000000,0.1,{['R = ',num2str(round(Er,4))], ['p = ',num2str(round(Ep,4))]});
+%    
+% %%
+% %PL
+% 
+% [FOr,FOp] = corr(PLfo',PL_FD);
+% [DTr,DTp] = corr(PLdt',PL_FD);
+% [ARr,ARp]=corr(PLar',PL_FD);
+% [Er,Ep]=corr(E_P_avg',PL_FD);
+% 
+% figure;
+% title('PL');
+% for i=1:numClusters
+%    subplot(3,4,i)
+%    scatter(PLfo(i,:)',PL_FD,50,'filled'); lsline
+%    ylabel('FD'); xlabel(['FO Cluster ',num2str(i)]);
+%    text(0.25,0.1,{['R = ',num2str(round(FOr(i),4))], ['p = ',num2str(round(FOp(i),4))]});
+%    
+%    subplot(3,4,i+4)
+%    scatter(PLdt(i,:)',PL_FD,50,'filled'); lsline
+%    ylabel('FD'); xlabel(['DT Cluster ',num2str(i)]);
+%    text(7.5,0.1,{['R = ',num2str(round(DTr(i),4))], ['p = ',num2str(round(DTp(i),4))]});
+%    
+%    subplot(3,4,i+8)
+%    scatter(PLar(i,:)',PL_FD,50,'filled'); lsline
+%    ylabel('FD'); xlabel(['AR Cluster ',num2str(i)]);
+%    text(2.25,0.1,{['R = ',num2str(round(ARr(i),4))], ['p = ',num2str(round(ARp(i),4))]});
+% end
+% 
+% figure;
+% scatter(E_P_avg',PL_FD,50,'filled'); lsline
+% ylabel('FD'); xlabel(['E_a_v_g']);
+%    text(1000000,0.1,{['R = ',num2str(round(Er,4))], ['p = ',num2str(round(Ep,4))]});
 
-load ratingsmeasures.mat ratings RatingsTable DASCTABLE asc
-
-
-[rr1,pp1] = partialcorr(diff_E_avg',ratings,FDdiff);
-[rr2,pp2] = partialcorr(diff_E_std',ratings,FDdiff);
-[rr3,pp3] = partialcorr(E_L_avg',ratings,FDdiff);
-[rr4,pp4] = partialcorr(E_L_std',ratings,FDdiff);
-[rr5,pp5] = partialcorr(E_P_avg',ratings,FDdiff);
-[rr6,pp6] = partialcorr(E_P_std',ratings,FDdiff);
-
-[rr7,pp7] = partialcorr(diffLZ',ratings,FDdiff);
-
-[rr8,pp8] = partialcorr(diffLIM_UP,ratings,FDdiff);
-
-
-[rrr1,ppp1] = partialcorr(diff_E_avg',asc,FDdiff);
-[rrr2,ppp2] = partialcorr(diff_E_std',asc,FDdiff);
-[rrr3,ppp3] = partialcorr(E_L_avg',asc,FDdiff);
-[rrr4,ppp4] = partialcorr(E_L_std',asc,FDdiff);
-[rrr5,ppp5] = partialcorr(E_P_avg',asc,FDdiff);
-[rrr6,ppp6] = partialcorr(E_P_std',asc,FDdiff);
-
-[rrr7,ppp7] = partialcorr(diffLZ',asc,FDdiff);
-
-[rrr8,ppp8] = partialcorr(diffLIM_UP,asc,FDdiff);
-
-% [rr2,pp2] = partialcorr(diff_E_std',ratings,FDdiff);
-% [rr3,pp3] = partialcorr(E_L_avg',ratings,FDdiff);
-% [rr4,pp4] = partialcorr(E_L_std',ratings,FDdiff);
-% [rr5,pp5] = partialcorr(E_P_avg',ratings,FDdiff);
-% [rr6,pp6] = partialcorr(E_P_std',ratings,FDdiff);
-
-% [rr1,pp1] = corr(diff_E_avg',ratings);
-% [rr2,pp2] = corr(diff_E_std',ratings);
-% [rr3,pp3] = corr(E_L_avg',ratings);
-% [rr4,pp4] = corr(E_L_std',ratings);
-
-titles = {'Intensity', 'Complex Imagery','Simple Halls','Emotional Arousal','Positive Mood','Ego Dissolution'};
-
-figure;
-for i=1:6
-    subplot(3,2,i)
-    
-    scatter(diff_E_avg',ratings(:,i),50,'filled');lsline
-    title(titles{i});
-    ylabel('Rating'); xlabel('∆E_a_v_g');
-end
-
-figure;
-for i=1:6
-    subplot(3,2,i)
-    
-    scatter(diffLZ',ratings(:,i),50,'filled');lsline
-    title(titles{i});
-    ylabel('Rating'); xlabel('∆LZ');
-end
-
-figure;
-for i=1:6
-    subplot(3,2,i)
-    
-    scatter(E_L_avg',ratings(:,i),50,'filled');lsline
-    title(titles{i});
-    ylabel('Rating'); xlabel('E\_L_a_v_g');
-end
-
-figure;
-for i=1:6
-    subplot(3,2,i)
-    
-    scatter(E_P_avg',ratings(:,i),50,'filled');lsline
-    title(titles{i});
-    ylabel('Rating'); xlabel('E\_P_a_v_g');
-end
-
-figure;
-for i=1:6
-    subplot(3,2,i)
-    
-    scatter(E_L_std',ratings(:,i),50,'filled');lsline
-    title(titles{i});
-    ylabel('Rating'); xlabel('E\_L_s_t_d');
-end
-
-figure;
-for i=1:6
-    subplot(3,2,i)
-    
-    scatter(diffLIM_UP,ratings(:,i),50,'filled');lsline
-    title(titles{i});
-    ylabel('Rating'); xlabel('∆LIM');
-end
-
-figure;
-for i=1:11
-    subplot(3,4,i)
-    
-    scatter(E_P_avg,asc(:,i),50,'filled');lsline
-%     title(titles{i});
-    ylabel('Rating'); xlabel('E_P_L');
-end
-
-
-
-%% trying to see if post-acute E reductions are present with un-paired comparisons of who got LSD on V1 vs V2
-
-orderIND = [1 0 1 0 0 1 0 1 0 1 1 1 0 1 0]; %1 recieve LSD on V1, 0 otherwise
-
-diffELSD = diff_E_avg(orderIND==1);
-diffEPL=diff_E_avg(orderIND==0);
-diffEPL(1,8)=NaN;
-
-
-PLELSD = E_L_avg(orderIND==1);
-PLEPL = E_P_avg(orderIND==0);
-PLELSD = E_P_avg(orderIND==1);
-PLEPL(1,8)=NaN;
-
-figure; violin([diffELSD',diffEPL']); xticks([1 2]); xticklabels({'LSD v1','PL v1'}); title('Energy reduction');
-figure; violin([PLELSD',PLEPL']); xticks([1 2]); xticklabels({'LSD v1','PL v1'}); title('PL Energy');

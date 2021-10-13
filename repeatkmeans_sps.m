@@ -1,6 +1,5 @@
 clear all; close all;clc
-a=clock;
-rng(a(6));
+
 
 %% set directories and load data
 

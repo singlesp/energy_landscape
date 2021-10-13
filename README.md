@@ -1,9 +1,9 @@
 # energy_landscape
 Code to reproduce analysis in Singleton et al. 2021 ("LSD flattens the brain's energy landscape: insights from receptor-informed network control theory", BioRxiv.).
 
-These scripts require that you have first downloaded the brain_states repo by Cornblath et al 2020 and added these to that directory (https://github.com/ejcorn/brain_states). Some of the code here is slightly modified Cornblath code, or at least relys heavily on that repo's core functions. 
+This repo relies on EJC code (Cornblath et al. Comms Bio, 2020). That repo (found here: (https://github.com/ejcorn/brain_states) has been added to this repo and some functions are slightly modified. 
 
-The most simple way to re-implement this work is to start by looking at the script `example.m` in the Cornblath repo before digging into the full set of scripts.
+
 
 ## Requirements:
   - MATLAB R2017a or later
@@ -25,11 +25,12 @@ The most simple way to re-implement this work is to start by looking at the scri
 
 ## General procedure and order of operations:
 
-Please refer to the Cornblath repo README for a detailed overview of the vast majority of the code used for this analysis and how to use the .sh files provided in that analysis.
+Each matlab script will need you up update the 'basedir' var to your own path.
 
-Download the Cornblath repo (https://github.com/ejcorn/brain_states) and add the scripts from this repo to the BASEDIR. (or however you'd like to get it all in the same place). Total install time <5 min.
+'split' has options of 'main', 'gsr', 'music', 'psilo', and 'sch' which represent different replications from the main analysis.
 
-For larger projects, you may need cluster access - with 30x 15 min fMRI scans, I was able to perform all of this analysis locally on a 2020 MacBook Pro with a total run time of <1 day. The permutation test requires the most time (12 hrs), followed by replications of k-means (1hr).
+
+For larger projects, you may need cluster access - with 30x 15 min fMRI scans and 463 ROIs, I was able to perform all of this analysis locally on a 2020 MacBook Pro with a total run time of <1 day. The permutation test requires the most time (12 hrs), followed by replications of k-means (1hr).
 
 You may start by specifying a range of k over which to perform your preliminary analysis. At least 3 independent analyses have now found this ideal range to be 4-6 but you may find something different. 
 To check - run `repeatkmeans_sps.m` over a range of k [2:max] (see Cornblath et al 2020 for choosing max k) followed by `elbow_sps.m` to view the variance explained plot. 

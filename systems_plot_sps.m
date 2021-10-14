@@ -5,7 +5,7 @@ cd(basedir);
 addpath(genpath('code'))
 %% set inputs
 numClusters = 4;
-split='main'
+split='psilo'
 
 savedir = fullfile(basedir,'results','example');mkdir(savedir);		% set save directory
 load(fullfile(savedir,['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat']))

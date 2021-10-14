@@ -1,7 +1,7 @@
 %% plot centroids on gummibrain from Keith Jamison-> https://github.com/kjamison/atlasblobs
 
 clear all; close all;clc
-basedir = '/Users/sps253/Documents/brain_states-master';
+basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
 savedir = fullfile(basedir,'results','example');mkdir(savedir);	
 
@@ -9,7 +9,7 @@ savedir = fullfile(basedir,'results','example');mkdir(savedir);
 %% plot 
 
 numClusters = 4;
-split='main' 
+split='psilo' 
 
 load(fullfile(savedir,['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat']))
 

@@ -9,7 +9,7 @@ clear all; close all;clc
 basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
 
-split = 'main'
+split = 'psilo'
 
 savedir = fullfile(basedir,'results','example');mkdir(savedir);
 load(fullfile(basedir,['data/',split,'.mat'])) % make sure this file matches the split you want to run below

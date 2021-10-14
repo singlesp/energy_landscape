@@ -8,7 +8,7 @@ savedir = fullfile(basedir,'results','example');mkdir(savedir);		% set save dire
 %% load BOLD data
 
 
-split='main'
+split='psilo'
 load(fullfile(['data/',split,'.mat']))
 
 numClusters=4;

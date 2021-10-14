@@ -15,13 +15,8 @@ savedir = fullfile(basedir,'results','example');mkdir(savedir);		% set save dire
 LSD_stop = nscans;
 PL_start = LSD_stop+1;
 tot = nscans*2;
-nsubjs=15;
 
-% scan_length = 7.33; %length of scan in minutes to get appearances per minute
-% rep_time = 2; %rep time in seconds to convert dwell time to seconds
 
-subj_scanInd=[repelem([1 3:nsubjs],1),repelem(1:nsubjs,1)]; % index data from each subject
-% subjInd=[repelem(1:nsubjs,1)]; %for data with only 1 scan per subj/cond
 
 %% big loop
 for numClusters=[4]

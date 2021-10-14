@@ -17,8 +17,6 @@ tot=nscans*2;
 numNets=7;
 D = NaN(nsubjs,TR*2,numClusters); %distance matrices will be stored here
 
-% LSDsubjInd=[repelem(1:nsubjs,TR),repelem(0,TR*nsubjs)]'; % index data from each subject (how most data is organized)
-% PLsubjInd=[repelem(0,TR*nsubjs),repelem(1:nsubjs,TR)]';
 
 LSD_stop=TR*nscans;
 PL_start=LSD_stop+1;
@@ -77,6 +75,7 @@ end
 YeoNetNames = {'VIS', 'SOM', 'DAT', 'VAT', 'LIM', 'FPN', 'DMN'};
 clusterNames = {'MS-1a','MS-1b','MS-2a','MS-2b'};
 
+% SI Figure 6b
 figure;
 subplot(1,2,1);
 imagesc(UPstat); colormap('plasma');
@@ -117,11 +116,11 @@ set(gca,'FontSize',8);
 set(gca,'TickLength',[0 0]);
 set(gca,'Fontname','arial');
 
-% save sch454radialvals.mat net7angle_Up net7angle_Down
+
 
 %% make a correlation plot comparing LSD average centroids with PL average centriods
 load(['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat'],'clusterNames'); 
-LSDcentroids = squeeze(mean(centroids(1:nsubjs,:,:)));
+LSDcentroids = squeeze(mean(centroids(1:nsubjs,:,:))); %run these two pairs of centroids on systems_plot_sps.m to get SI Figure 6a/b
 PLcentroids = squeeze(mean(centroids(nsubjs+1:nsubjs*2,:,:)));
 
 err = NaN(numClusters,numClusters);
@@ -132,7 +131,7 @@ for i=1:numClusters
 end
 
 [rcent,pcent]=corr(LSDcentroids,PLcentroids);
-
+%SI Figure 6d
 figure;
 imagesc(rcent);
 xticks(1:numClusters); yticks(1:numClusters); colormap('plasma'); 

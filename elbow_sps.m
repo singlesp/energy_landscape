@@ -3,6 +3,8 @@
 
 %% init
 
+%% SI Figure 13 (need to run repeatkmeans_sps.m first)
+
 clear all; close all;clc
 basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
@@ -15,7 +17,7 @@ load(fullfile(basedir,['data/',split,'.mat'])) % make sure this file matches the
 %% inputs
 
 N = size(concTS,1); % number of observations
-maxk = round(sqrt(TR))-1;
+maxk = round(sqrt(TR))-1; %<- check, may not need "-1" maxk^2 should be < total TR in scan
 
 k_rng = 2:maxk;
 

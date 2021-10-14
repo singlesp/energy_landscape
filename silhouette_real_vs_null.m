@@ -11,7 +11,7 @@ split='main'
 load(fullfile(['data/',split,'.mat']))
 numClusters = 4;
 
-nobs = nsubjs
+nobs = nsubjs;
 
 
 %% create null and random TS

@@ -29,7 +29,7 @@ LSD_stop=TR*nscans;
 PL_start=LSD_stop+1;
 PL_stop=LSD_stop*2;
 
-% subjInd=[repelem(1:nsubjs,TR),repelem(1:nsubjs,TR)]; %for predata only
+
 [LSDTransitionProbability2D,LSDTransitionProbabilityMats] = GET_TRANS_PROBS(partition(1:LSD_stop),subjInd(1:LSD_stop));
 [LSDTransitionProbabilityNoPersist2D,LSDTransitionProbabilityMatsNoPersist] = GET_TRANS_PROBS_NO_PERSIST(partition(1:LSD_stop),subjInd(1:LSD_stop));
 

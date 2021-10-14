@@ -1,3 +1,4 @@
+%% this data goes into elbow_sps.m and is used to choose k
 clear all; close all;clc
 
 basedir = '/Users/sps253/Documents/energy_landscape'; %%<- your dir here!

@@ -30,7 +30,7 @@ This repo relies on EJC code (Cornblath et al. Comms Bio, 2020). That repo (foun
 
 ## General procedure and order of operations:
 
-Each matlab script will need you up update the 'basedir' var to your own path.
+Each matlab script will need you up update the `basedir` var to your own path for this repo.
 
 `split` has options of `main`, `gsr`, `music`, `psilo`, and `sch` which represent different replications from the main analysis.
 

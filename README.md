@@ -1,6 +1,6 @@
 # energy_landscape
 
-Code to reproduce analysis in Singleton et al. 2021 ("LSD flattens the brain's energy landscape: insights from receptor-informed network control theory", BioRxiv.).
+Code to reproduce analysis in Singleton et al. 2021 ("Psychedelics flatten the brain's energy landscape: insights from receptor-informed network control theory", BioRxiv.).
 
 ![energy_lanscape_logo](Figure1.jpg)
 

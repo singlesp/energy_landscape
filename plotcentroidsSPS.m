@@ -9,7 +9,7 @@ savedir = fullfile(basedir,'results','example');mkdir(savedir);
 %% plot 
 
 numClusters = 4;
-split='psilo' 
+split='main' 
 
 load(fullfile(savedir,['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat']))
 

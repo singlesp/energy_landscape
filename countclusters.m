@@ -7,7 +7,7 @@ cd(basedir);
 
 %% set inputs
 
-split='psilo'
+split='main'
 load(fullfile(['data/',split,'.mat']))
 savedir = fullfile(basedir,'results','example');mkdir(savedir);		% set save directory
 

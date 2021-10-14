@@ -1,5 +1,6 @@
 # energy_landscape
-![energy_lanscape_logo](Figure1.jpeg)
+![energy_lanscape_logo](Figure1.jpg)
+
 Code to reproduce analysis in Singleton et al. 2021 ("LSD flattens the brain's energy landscape: insights from receptor-informed network control theory", BioRxiv.).
 
 This repo relies on EJC code (Cornblath et al. Comms Bio, 2020). That repo (found here: (https://github.com/ejcorn/brain_states) has been added to this repo and some functions are slightly modified. 

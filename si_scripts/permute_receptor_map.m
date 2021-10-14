@@ -156,4 +156,4 @@ set(gca,'TickLength',[0 0]);
 set(gca,'Fontname','arial');
 
 %% save
-save(fullfile(['receptorperm_split',num2str(split),'_k',num2str(numClusters),'.mat']),'E_weighted_PLavg','NullTransitionEnergy','pvals_onetail','fdrpv1t','nperms');
+save(fullfile(savedir,['receptorperm_split',num2str(split),'_k',num2str(numClusters),'.mat']),'E_weighted_PLavg','NullTransitionEnergy','pvals_onetail','fdrpv1t','nperms');

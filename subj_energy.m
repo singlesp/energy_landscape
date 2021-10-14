@@ -10,7 +10,7 @@ c = 0;
 T = 0.001 % set time scale parameters based on values from T_sweep_sps.m
 
 numClusters=4;
-split='main'
+split='psilo'
 load(fullfile(['data/',split,'.mat']))
 
 load(['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat'],'partition','centroids','clusterNames'); %make sure file matches centroids you want to initialize from
@@ -48,6 +48,10 @@ elseif nparc == 461
     load data/5HTvecs_ls463.mat mean5HT2A_ls463
     HT = mean5HT2A_ls463;
     HT([14 463],:)=[];
+elseif nparc == 462
+    load data/5HTvecs_ls463.mat mean5HT2A_ls463
+    HT = mean5HT2A_ls463;
+    HT(463,:)=[];
 end %weight towards 5HT2a
 norm = (HT/max(HT))';
 InputVector = norm;% > 0.883; %option to binarize input vector

@@ -1,4 +1,7 @@
-%% spin test (spin receptor map) - Figure 4a/b iv
+%% spin test (spin receptor map - maps obtained from Vasa code) - Figure 4a/b iv
+% ref: Vasa et al Cerebral Cortex 2018
+% (https://doi.org/10.1093/cercor/bhx249)
+
 clear all; close all;
 basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);

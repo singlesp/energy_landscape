@@ -10,7 +10,7 @@ c = 0;
 T = 0.001 % set time scale parameters based on values from T_sweep_sps.m
 
 numClusters=4;
-split='psilo'
+split='main'
 load(fullfile(['data/',split,'.mat']))
 
 load(['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat'],'partition','centroids','clusterNames'); %make sure file matches centroids you want to initialize from

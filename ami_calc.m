@@ -5,7 +5,7 @@ clear all; close all;clc
 basedir = '/Users/sps253/Documents/energy_landscape';
 cd(basedir);
 
-split = 'psilo'
+split = 'main'
 
 load(fullfile(['data/',split,'.mat']))
 

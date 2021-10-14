@@ -12,7 +12,7 @@ cd(basedir);
 
 %% set inputs
 numClusters = 4;
-split='psilo' 
+split='main' 
 load(fullfile(['data/',split,'.mat']))
 
 

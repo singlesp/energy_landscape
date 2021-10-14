@@ -28,7 +28,7 @@ Anorm = NORMALIZE(sc,c);
 %% load partitions from elbow plot
 
 maxk = round(sqrt(TR)) -1; %k^2 must be less than TR to capture all transitions
-k_rng=2:14;
+k_rng=2:maxk;
 
 C_sub = [repmat([1 0 0],nsubjs,1); repmat([0 0 0],nsubjs,1)];
 C_avg = [[1 0 0];[0 0 0]];

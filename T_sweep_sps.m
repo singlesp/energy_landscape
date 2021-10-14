@@ -12,7 +12,7 @@ cd(basedir);
 
 %% set inputs
 numClusters = 4;
-split='main' 
+split='psilo' 
 load(fullfile(['data/',split,'.mat']))
 
 
@@ -25,31 +25,6 @@ PL_centroids = squeeze(mean(centroids(nsubjs+1:nsubjs*2,:,:)));
 
 load(fullfile(savedir,['Partition_bp',num2str(split),'_k',num2str(numClusters),'.mat']),'centroids')
 
-
-
-% load sc_fc.mat sc90_nonsymm % load example group average structural A matrix -- this is from PNC while fMRI is HCP so DTI is younger than fMRI here
-% if nparc == 454
-%     load Schaefer454_HCP_DTI_count.mat vol_normalized_sc
-% %     load sch454_DTI_fiber_consensus_HCP.mat connectivity %consensus matrix
-%     connectivity = vol_normalized_sc;
-% elseif nparc == 232
-%     load /Users/sps253/Documents/brain_states-master/Schaefer232_HCP_DTI_count.mat vol_normalized_sc
-%     sc = vol_normalized_sc;
-% elseif nparc == 461
-%     load /Users/sps253/Documents/brain_states-master/Lausanne463_HCP_DTI_count.mat vol_normalized_sc %connectivity
-% %     load ls463_DTI_fiber_consensus_HCP.mat connectivity %consensus matrix (less sparse)
-%     connectivity = vol_normalized_sc;
-%     connectivity([14 463],:)=[];
-%     connectivity(:,[14 463])=[];
-% elseif nparc == 462
-    load /Users/sps253/Documents/brain_states-master/Lausanne463_HCP_DTI_count.mat vol_normalized_sc
-    connectivity = vol_normalized_sc;
-    connectivity(463,:)=[];
-    connectivity(:,463)=[];
-
-% end
-% 
-sc = connectivity;
 
 % c = 0; 
 C_rng = 0 %[0:1:5]; 

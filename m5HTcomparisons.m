@@ -5,7 +5,7 @@ cd(basedir);
 
 %% set inputs
 numClusters = 4;
-split='main' 
+split='psilo' 
 load(fullfile(['data/',split,'.mat']))
 
 T = 0.001  % set time scale parameters based on values from paper

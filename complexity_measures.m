@@ -8,7 +8,7 @@ cd(basedir);
 savedir = fullfile(basedir,'results','example');mkdir(savedir);	
 %% set inputs
 
-split='main' 
+split='psilo' 
 load(fullfile(['data/',split,'.mat']))
 numClusters = 4;
 

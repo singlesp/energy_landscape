@@ -6,7 +6,7 @@ cd(basedir);
 
 %% load data
 
-split = 'main' %%<- options: main, gsr, sch, music, psilo
+split = 'psilo' %%<- options: main, gsr, sch, music, psilo
 
 
 load(fullfile(['data/',split,'.mat']))

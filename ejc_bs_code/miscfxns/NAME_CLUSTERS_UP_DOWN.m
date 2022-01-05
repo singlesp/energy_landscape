@@ -14,6 +14,9 @@ if nparc == 90 %|| nparc == 116 %116 will not work now with sch116 OK because do
    network7labels=aal_to_yeo;
    %network7labels(isnan(network7labels))=8; %replace NaN values with 8 so it is unassigned
    % network7labels=[ones(13,1); 2*ones(13,1); 3*ones(13,1); 4*ones(13,1); 5*ones(13,1); 6*ones(13,1); 7*ones(12,1)];
+elseif nparc == 86
+    load('data/fs86_to_yeo.csv');
+    network7labels=fs86_to_yeo;
 elseif nparc ==200 || nparc ==232
    load('data/sch232_to_yeo.csv'); 
    network7labels=sch232_to_yeo;

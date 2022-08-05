@@ -1,5 +1,7 @@
 # energy_landscape
 
+Original publication citable release: [![DOI](https://zenodo.org/badge/377270896.svg)](https://zenodo.org/badge/latestdoi/377270896)
+
 Code to reproduce analysis in Singleton et al. 2021 ("Psychedelics flatten the brain's energy landscape: insights from receptor-informed network control theory", BioRxiv.).
 
 ![energy_lanscape_logo](Figure1.jpg)

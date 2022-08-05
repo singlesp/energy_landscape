@@ -1,0 +1,32 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Receptor-informed network control theory links LSD
+  and psilocybin to a flattening of the brain's
+  control energy landscape
+message: ' '
+type: software
+authors:
+  - given-names: S. Parker
+    family-names: Singleton
+    email: sps253@cornell.edu
+  - given-names: Andrea I.
+    family-names: Luppi
+  - given-names: Robin L.
+    family-names: Carhart-Harris
+  - given-names: Josephine
+    family-names: Cruzat
+  - given-names: Leor
+    family-names: Roseman
+  - given-names: David J.
+    family-names: Nutt
+  - given-names: Gustavo
+    family-names: Deco
+  - given-names: Morten L.
+    family-names: Kringelbach
+  - given-names: Emmanuel
+    family-names: Stamatakis
+  - given-names: Amy
+    family-names: Kuceyeski
